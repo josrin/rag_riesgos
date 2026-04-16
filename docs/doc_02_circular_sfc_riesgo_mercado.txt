@@ -1,0 +1,61 @@
+CIRCULAR EXTERNA No. 034 DE 2025
+SUPERINTENDENCIA FINANCIERA DE COLOMBIA
+
+Dirigida a: Sociedades Administradoras de Fondos de Pensiones y Cesantías
+Asunto: Actualización de lineamientos para la gestión del riesgo de mercado en portafolios de inversión de fondos de pensiones voluntarias
+
+La Superintendencia Financiera de Colombia, en ejercicio de sus facultades legales, en especial las conferidas por el numeral 9 del artículo 11.2.1.4.2 del Decreto 2555 de 2010, y
+
+CONSIDERANDO:
+
+Que es necesario actualizar los parámetros de gestión del riesgo de mercado ante la creciente volatilidad de los mercados financieros globales y los cambios en las condiciones macroeconómicas del país.
+
+Que las entidades administradoras de fondos de pensiones voluntarias deben contar con sistemas robustos de medición y control de riesgos que protejan los intereses de los afiliados.
+
+RESUELVE:
+
+CAPÍTULO I - DISPOSICIONES GENERALES
+
+Artículo 1. Ámbito de aplicación. Las disposiciones contenidas en la presente circular aplican a todas las Sociedades Administradoras de Fondos de Pensiones y Cesantías en relación con la gestión de los fondos de pensiones voluntarias que administren.
+
+Artículo 2. Definición de Riesgo de Mercado. Se entiende por riesgo de mercado la posibilidad de que una entidad incurra en pérdidas asociadas a la disminución del valor de sus portafolios, por movimientos adversos en los precios de mercado, tasas de interés, tipos de cambio y otros factores de riesgo.
+
+CAPÍTULO II - SISTEMA DE ADMINISTRACIÓN DE RIESGO DE MERCADO (SARM)
+
+Artículo 3. Componentes del SARM. Las entidades deberán implementar un sistema integral que incluya:
+a) Políticas y procedimientos documentados para la gestión del riesgo de mercado.
+b) Modelos de medición del Value at Risk (VaR) con un nivel de confianza mínimo del 99% y horizonte temporal de 10 días.
+c) Pruebas de estrés y backtesting con frecuencia mínima trimestral.
+d) Límites de exposición por tipo de riesgo, instrumento y moneda.
+e) Sistemas de información que permitan el monitoreo en tiempo real de las posiciones.
+
+Artículo 4. Valor en Riesgo (VaR). Las entidades podrán utilizar las siguientes metodologías:
+a) Simulación histórica con ventana mínima de 250 días de observación.
+b) Simulación de Monte Carlo con mínimo 10,000 escenarios.
+c) Método paramétrico (varianza-covarianza) únicamente para portafolios con instrumentos lineales.
+
+Artículo 5. Límites de Inversión Actualizados.
+5.1 Renta variable local: máximo 40% del valor del fondo.
+5.2 Renta variable internacional: máximo 30% del valor del fondo.
+5.3 Instrumentos derivados: el valor nocional no podrá exceder el 20% del valor del fondo, y solo se permitirán con fines de cobertura o gestión eficiente del portafolio.
+5.4 Inversiones en moneda extranjera sin cobertura: máximo 15% del valor del fondo.
+
+Artículo 6. Pruebas de Estrés. Las entidades deberán realizar pruebas de estrés que contemplen al menos los siguientes escenarios:
+a) Incremento paralelo de la curva de rendimientos de 300 puntos básicos.
+b) Caída del mercado accionario local del 30%.
+c) Depreciación del peso colombiano del 25% frente al dólar estadounidense.
+d) Combinación simultánea de los escenarios anteriores.
+
+Artículo 7. Backtesting. Se deberá realizar backtesting del modelo VaR con frecuencia diaria, comparando las pérdidas reales contra las estimadas. Si el número de excepciones supera el umbral del semáforo amarillo de Basilea (más de 4 excepciones en 250 días), la entidad deberá reportar a esta Superintendencia las acciones correctivas adoptadas en un plazo máximo de 15 días hábiles.
+
+CAPÍTULO III - REPORTES Y SUPERVISIÓN
+
+Artículo 8. Frecuencia de Reportes. Las entidades deberán reportar a esta Superintendencia:
+a) Informe mensual de VaR y exposiciones por factor de riesgo.
+b) Informe trimestral de pruebas de estrés y backtesting.
+c) Informe semestral de gestión integral de riesgos.
+
+Artículo 9. Vigencia. La presente circular rige a partir del 1 de julio de 2025.
+
+Publíquese y cúmplase.
+SUPERINTENDENTE FINANCIERO DE COLOMBIA

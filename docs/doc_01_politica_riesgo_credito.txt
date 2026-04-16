@@ -1,0 +1,44 @@
+POLÍTICA DE GESTIÓN DE RIESGO DE CRÉDITO
+Fondo de Pensiones Voluntarias - Horizonte Seguro
+Versión 3.2 | Vigencia: Enero 2026
+
+1. OBJETIVO
+Establecer los lineamientos, criterios y metodologías para la identificación, medición, control y monitoreo del riesgo de crédito asociado a las inversiones del portafolio de pensiones voluntarias "Horizonte Seguro", administrado por la Sociedad Administradora de Fondos de Pensiones y Cesantías.
+
+2. ALCANCE
+Esta política aplica a todas las inversiones en instrumentos de deuda, tanto del mercado local como internacional, incluyendo bonos corporativos, títulos de deuda pública, CDTs, papeles comerciales, y cualquier otro instrumento que genere exposición al riesgo de crédito.
+
+3. DEFINICIONES
+3.1 Riesgo de Crédito: Posibilidad de pérdida económica derivada del incumplimiento de las obligaciones contractuales por parte del emisor o contraparte.
+3.2 Probabilidad de Incumplimiento (PD): Estimación cuantitativa de la probabilidad de que un emisor entre en estado de default en un horizonte temporal determinado.
+3.3 Pérdida Dado el Incumplimiento (LGD): Porcentaje estimado de la exposición que se perdería en caso de incumplimiento del emisor.
+3.4 Exposición en el Momento del Incumplimiento (EAD): Valor estimado de la exposición crediticia al momento del evento de default.
+
+4. MARCO REGULATORIO
+La gestión del riesgo de crédito se enmarca en las disposiciones de la Superintendencia Financiera de Colombia (SFC), particularmente en la Circular Básica Contable y Financiera (Circular Externa 100 de 1995) y el Decreto 2555 de 2010, así como en las mejores prácticas internacionales establecidas por el Comité de Basilea.
+
+5. LÍMITES DE EXPOSICIÓN
+5.1 Por emisor individual: No se podrá mantener una exposición superior al 10% del valor del fondo en un solo emisor privado.
+5.2 Por calificación crediticia: Mínimo el 60% del portafolio deberá estar invertido en emisores con calificación igual o superior a AA (escala local) o BBB (escala internacional).
+5.3 Por sector económico: La concentración máxima por sector será del 25% del portafolio.
+5.4 Emisores sin calificación: La exposición máxima en emisores sin calificación crediticia no podrá exceder el 5% del valor total del fondo.
+
+6. METODOLOGÍA DE MEDICIÓN
+6.1 Se utilizará un modelo interno de scoring crediticio basado en variables financieras, macroeconómicas y cualitativas para la estimación de la PD.
+6.2 La LGD será estimada mediante modelos estadísticos calibrados con datos históricos de recuperación del mercado colombiano.
+6.3 El cálculo de la pérdida esperada (PE) se realizará como: PE = PD × LGD × EAD
+6.4 Se realizarán pruebas de estrés trimestrales simulando escenarios adversos de deterioro crediticio.
+
+7. MONITOREO Y ALERTAS
+7.1 Alertas tempranas: Se activarán alertas cuando un emisor presente deterioro en su calificación crediticia de más de un notch, cuando los spreads crediticios del emisor se amplíen más de 150 puntos básicos en un período de 30 días, o cuando se identifiquen eventos adversos en la prensa financiera.
+7.2 Comité de Riesgo: El Comité de Riesgo de Crédito se reunirá mensualmente para revisar la exposición del portafolio y tomar decisiones sobre los límites vigentes.
+
+8. VALORACIÓN DE GARANTÍAS
+Para instrumentos con garantía, se aplicarán los siguientes haircuts:
+- Títulos de deuda pública (TES): 5%
+- CDTs de entidades AAA: 10%
+- Bonos corporativos grado de inversión: 15%
+- Acciones líquidas: 30%
+
+9. PROVISIONAMIENTO
+Se constituirán provisiones individuales y contracíclicas de acuerdo con los lineamientos de la SFC, utilizando la metodología de pérdida esperada bajo el estándar NIIF 9.

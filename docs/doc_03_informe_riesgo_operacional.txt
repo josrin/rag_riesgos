@@ -1,0 +1,66 @@
+INFORME TRIMESTRAL DE RIESGO OPERACIONAL
+Fondo de Pensiones Voluntarias - Horizonte Seguro
+Período: Octubre - Diciembre 2025
+
+RESUMEN EJECUTIVO
+
+Durante el cuarto trimestre de 2025, el sistema de gestión de riesgo operacional registró un total de 47 eventos de riesgo, de los cuales 12 fueron clasificados como de impacto medio y 3 como de impacto alto. Las pérdidas operacionales totales del período ascendieron a COP 823 millones, representando un incremento del 15% respecto al trimestre anterior, principalmente atribuible a incidentes de ciberseguridad y fallas en procesos de conciliación.
+
+1. EVENTOS DE RIESGO POR CATEGORÍA
+
+1.1 Fraude Interno (2 eventos - COP 45 millones)
+Se identificaron dos casos de manipulación de registros contables por parte de un funcionario del área de operaciones. Los eventos fueron detectados por el sistema de monitoreo transaccional automatizado y reportados al área de cumplimiento. Se activó el protocolo de investigación interna y el funcionario fue desvinculado.
+
+1.2 Fraude Externo (5 eventos - COP 312 millones)
+El evento más significativo correspondió a un ataque de phishing dirigido que comprometió credenciales de acceso al sistema de negociación. El atacante logró ejecutar 3 operaciones no autorizadas por un valor total de COP 280 millones antes de que el sistema de alertas bloqueara la cuenta. Se recuperaron COP 195 millones mediante el proceso de reversión con las contrapartes. La pérdida neta fue de COP 85 millones.
+
+Adicionalmente, se registraron 4 intentos de suplantación de identidad de afiliados para solicitar retiros fraudulentos, los cuales fueron detectados y bloqueados por el sistema de verificación biométrica.
+
+1.3 Relaciones Laborales y Seguridad en el Puesto de Trabajo (3 eventos - COP 28 millones)
+Se presentaron tres incidentes relacionados con errores en el cálculo de prestaciones sociales de empleados del fondo. Los errores fueron corregidos y se implementó un control adicional de doble verificación.
+
+1.4 Prácticas con Clientes, Productos y Negocios (8 eventos - COP 156 millones)
+Se identificaron 5 casos de información incompleta en los perfiles de riesgo de afiliados, lo que derivó en asignaciones inadecuadas de portafolio. Tres afiliados presentaron reclamaciones formales que fueron atendidas con compensaciones por COP 156 millones. Se fortaleció el proceso de perfilamiento con validaciones automáticas adicionales.
+
+1.5 Daños a Activos Materiales (1 evento - COP 12 millones)
+Daño en el sistema de aire acondicionado del centro de datos secundario, que generó una interrupción de 4 horas en los servicios de consulta en línea. Se activó el plan de contingencia y la operación se restableció dentro de los tiempos establecidos en el BCP.
+
+1.6 Fallas Tecnológicas (15 eventos - COP 178 millones)
+Los eventos más relevantes fueron:
+- Caída del sistema de valoración de portafolios durante 6 horas (COP 95 millones en costos operativos y multa de la SFC).
+- Falla en la interfaz con el depositario de valores que retrasó la liquidación de 23 operaciones (COP 52 millones).
+- Error en el módulo de cálculo de rentabilidades que afectó los extractos de 1,200 afiliados (COP 31 millones en costos de corrección y comunicación).
+
+1.7 Ejecución y Gestión de Procesos (13 eventos - COP 92 millones)
+Principalmente errores en procesos de conciliación bancaria y contable, errores de digitación en órdenes de inversión, y demoras en la ejecución de rebalanceos de portafolio.
+
+2. INDICADORES CLAVE DE RIESGO (KRIs)
+
+| Indicador | Meta | Resultado Q4 | Estado |
+|-----------|------|-------------|--------|
+| Pérdida operacional / Ingresos | < 2% | 1.8% | Amarillo |
+| Disponibilidad sistemas críticos | > 99.5% | 99.2% | Rojo |
+| Tiempo medio de resolución incidentes | < 4 horas | 3.8 horas | Verde |
+| Eventos de alto impacto | 0 | 3 | Rojo |
+| Efectividad controles automáticos | > 95% | 93.7% | Amarillo |
+| Reclamaciones por errores operativos | < 10 | 8 | Verde |
+
+3. PLAN DE ACCIÓN
+
+3.1 Corto plazo (Q1 2026):
+- Implementar autenticación multifactor (MFA) para todos los accesos al sistema de negociación.
+- Reforzar el programa de concientización en ciberseguridad para todos los empleados.
+- Actualizar el sistema de monitoreo transaccional con reglas de detección mejoradas.
+
+3.2 Mediano plazo (S1 2026):
+- Migrar el centro de datos secundario a infraestructura cloud con redundancia geográfica.
+- Implementar un sistema de inteligencia artificial para detección de patrones anómalos en transacciones.
+- Rediseñar el proceso de perfilamiento de afiliados con integración de fuentes externas.
+
+4. CAPITAL REGULATORIO POR RIESGO OPERACIONAL
+
+De acuerdo con la metodología del indicador básico de Basilea, el requerimiento de capital por riesgo operacional para el período es de COP 15,400 millones, lo cual representa un incremento del 8% respecto al período anterior.
+
+Elaborado por: Dirección de Riesgo Operacional
+Revisado por: Vicepresidencia de Riesgos
+Aprobado por: Comité de Riesgos - Sesión del 15 de enero de 2026

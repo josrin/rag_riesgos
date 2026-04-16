@@ -1,0 +1,53 @@
+# ─── RAG Riesgos — Dependencias Python ───
+# Probado con Python 3.13.12 en Windows 11
+# Instalar dentro del venv: pip install -r requirements.txt
+#
+# PREREQUISITOS EXTERNOS (no se instalan con pip):
+#   1. Ollama >= 0.20     → https://ollama.com/download/windows
+#      Modelos requeridos (descargar con `ollama pull <nombre>`):
+#        - llama3              (LLM, ~4.7 GB)
+#        - bge-m3              (embeddings multilingues, ~1.2 GB)
+#   2. Tesseract-OCR >= 5  → https://github.com/UB-Mannheim/tesseract/wiki
+#      Instalar con idioma "Spanish" habilitado.
+#      Ruta por defecto: C:\Program Files\Tesseract-OCR\tesseract.exe
+#   3. Poppler for Windows → https://github.com/oschwartz10612/poppler-windows/releases
+#      Descomprimir y anotar la ruta a la carpeta bin.
+#      Ej: C:\Program Files\poppler-24.08.0\Library\bin
+#
+# Las rutas de Tesseract y Poppler se configuran en .env
+# (ver .env.example como plantilla).
+
+# --- LLM y embeddings ---
+ollama==0.6.1
+
+# --- Vector store ---
+chromadb==1.5.7
+
+# --- Extraccion de PDFs ---
+pdfplumber==0.11.9
+pypdf==6.10.2
+
+# --- OCR (fallback para PDFs escaneados) ---
+pdf2image==1.17.0
+pytesseract==0.3.13
+pillow==12.2.0
+
+# --- Fragmentacion de texto ---
+langchain-text-splitters==1.1.1
+
+# --- Recuperacion lexica (busqueda hibrida BM25 + vectorial) ---
+rank-bm25==0.2.2
+
+# --- Cross-encoder reranker (BAAI/bge-reranker-v2-m3) ---
+# Arrastra torch + transformers (~500 MB CPU). El modelo mismo (~2 GB)
+# se descarga en el primer uso a ~/.cache/huggingface.
+sentence-transformers==5.4.1
+
+# --- Watcher continuo de docs/ (reindex automatico) ---
+watchdog==4.0.2
+
+# --- UI y utilidades ---
+streamlit==1.56.0
+python-dotenv==1.2.2
+tenacity==9.1.4
+pandas==3.0.2

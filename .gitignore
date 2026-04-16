@@ -1,0 +1,19 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.env
+data/chroma/
+data/queries.db
+data/manifest.json
+data/tessdata/
+.streamlit/
+
+# Roadmap interno - no publico
+NEXT_STEPS.md
+
+# Eval outputs (regenerables)
+eval/report.json
+eval/compare_report.json
+eval/alpha_sweep.json

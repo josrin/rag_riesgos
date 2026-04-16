@@ -1,0 +1,85 @@
+ACTA DEL COMITÉ DE RIESGOS No. 2025-12
+Fondo de Pensiones Voluntarias - Horizonte Seguro
+Fecha: 18 de diciembre de 2025
+Lugar: Sala de Juntas - Piso 12, Torre Protección
+Hora de inicio: 9:00 a.m. | Hora de finalización: 11:45 a.m.
+
+ASISTENTES:
+- María Fernanda López - Vicepresidenta de Riesgos (Presidente del Comité)
+- Carlos Andrés Mejía - Director de Riesgo de Mercado
+- Ana Sofía Restrepo - Directora de Riesgo de Crédito
+- Juan Pablo Torres - Director de Riesgo Operacional
+- Diana Marcela Vélez - Directora de Riesgo de Liquidez
+- Roberto Cárdenas - Gerente del Fondo Horizonte Seguro
+- Camilo Hernández - Director de Inversiones
+- Invitado: Dr. Alejandro Ríos - Consultor externo de ciberseguridad
+
+ORDEN DEL DÍA:
+1. Verificación del quórum y aprobación del acta anterior
+2. Informe de riesgo de mercado - Noviembre 2025
+3. Revisión de límites de inversión en renta variable internacional
+4. Incidente de ciberseguridad - Plan de acción
+5. Propuesta de implementación de modelo de IA para detección de fraude
+6. Varios
+
+DESARROLLO:
+
+1. VERIFICACIÓN DEL QUÓRUM Y APROBACIÓN DEL ACTA ANTERIOR
+Se verificó la existencia del quórum reglamentario. Se aprobó por unanimidad el Acta No. 2025-11 del 20 de noviembre de 2025.
+
+2. INFORME DE RIESGO DE MERCADO
+El Director de Riesgo de Mercado presentó el informe correspondiente a noviembre de 2025. Los puntos principales fueron:
+
+El VaR del portafolio a 10 días con nivel de confianza del 99% se ubicó en COP 12,350 millones, equivalente al 2.1% del valor del fondo (COP 588,000 millones). Este nivel se encuentra dentro del límite aprobado del 3%.
+
+Se observó un incremento del VaR del 18% respecto a octubre, explicado principalmente por: (i) el aumento de la volatilidad en las tasas de interés locales ante la incertidumbre sobre la política monetaria del Banco de la República, y (ii) la mayor exposición a renta variable internacional tras las compras realizadas en el rebalanceo del portafolio.
+
+El backtesting mostró 2 excepciones en los últimos 250 días, manteniéndose en zona verde del semáforo de Basilea.
+
+Las pruebas de estrés indicaron una pérdida potencial máxima de COP 35,200 millones en el escenario combinado (caída de renta variable 30% + incremento de tasas 300 pbs + depreciación COP 25%), representando el 6% del valor del fondo.
+
+DECISIÓN: Se aprobó mantener los límites de VaR vigentes. Se solicitó al área de inversiones reducir la duración del portafolio de renta fija en 0.5 años como medida preventiva ante el escenario de tasas al alza.
+
+3. REVISIÓN DE LÍMITES EN RENTA VARIABLE INTERNACIONAL
+El Gerente del Fondo presentó una propuesta para incrementar el límite de inversión en renta variable internacional del 25% al 30%, alineándose con el nuevo techo regulatorio establecido por la Circular 034 de 2025.
+
+La Directora de Riesgo de Crédito expresó preocupación por la exposición cambiaria adicional. El Director de Inversiones indicó que las nuevas posiciones se implementarían con cobertura cambiaria al 70%.
+
+DECISIÓN: Se aprobó el incremento del límite al 28% (no el 30% solicitado), con la condición de que las nuevas posiciones mantengan cobertura cambiaria mínima del 60%. Se estableció un período de transición de 3 meses para alcanzar el nuevo nivel.
+
+4. INCIDENTE DE CIBERSEGURIDAD
+El Director de Riesgo Operacional presentó el informe detallado del incidente de phishing ocurrido el 5 de diciembre, que resultó en operaciones no autorizadas por COP 280 millones (pérdida neta COP 85 millones tras recuperación).
+
+El consultor externo, Dr. Alejandro Ríos, presentó los hallazgos de la investigación forense:
+- El ataque fue dirigido (spear phishing) contra un operador del mesa de negociación.
+- El correo malicioso simulaba ser una comunicación interna del área de tecnología solicitando actualización de credenciales.
+- El tiempo entre el compromiso de las credenciales y la detección fue de 47 minutos.
+- Las 3 operaciones ejecutadas fueron compras de TES con entrega diferida a contrapartes no habituales.
+
+DECISIÓN: Se aprobó la implementación inmediata de las siguientes medidas:
+a) Autenticación multifactor (MFA) obligatoria para el sistema de negociación (plazo: 30 días).
+b) Programa de simulación de phishing trimestral para todos los empleados.
+c) Reducción del límite de operaciones individuales sin aprobación dual de COP 500 millones a COP 200 millones.
+d) Implementación de lista blanca de contrapartes en el sistema de negociación.
+
+5. PROPUESTA DE MODELO DE IA PARA DETECCIÓN DE FRAUDE
+El Director de Riesgo Operacional presentó una propuesta para implementar un sistema basado en inteligencia artificial para la detección en tiempo real de patrones anómalos en transacciones. La propuesta incluye:
+
+- Modelo de detección de anomalías basado en autoencoders y isolation forests.
+- Integración con el sistema transaccional actual mediante API.
+- Fase piloto de 3 meses con monitoreo paralelo al sistema actual.
+- Inversión estimada: COP 450 millones (desarrollo + infraestructura primer año).
+- ROI estimado: Reducción del 40% en pérdidas por fraude (COP 180 millones/año basado en datos históricos).
+
+La Vicepresidenta de Riesgos destacó la importancia de asegurar la explicabilidad del modelo, dado que las decisiones deben ser auditables por la SFC.
+
+DECISIÓN: Se aprobó la fase de diseño y desarrollo del modelo con un presupuesto inicial de COP 200 millones. Se condicionó el paso a producción a los resultados de la fase piloto y a la validación del modelo por parte de auditoría interna y el área de cumplimiento regulatorio.
+
+6. VARIOS
+- Se recordó la fecha límite del 31 de enero de 2026 para la entrega del informe semestral de gestión integral de riesgos a la SFC.
+- Se programó una sesión extraordinaria del Comité para el 8 de enero de 2026 para revisar los resultados del cierre de año.
+
+Sin más asuntos que tratar, se levantó la sesión.
+
+Firma: María Fernanda López - Presidente del Comité
+Firma: Secretario Técnico del Comité de Riesgos

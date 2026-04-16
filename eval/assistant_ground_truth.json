@@ -1,0 +1,97 @@
+{
+  "classification": [
+    {
+      "id": "cls_01",
+      "text": "La contraparte corporativa presenta una probabilidad de incumplimiento del 3.2% segun el modelo interno, y el LGD estimado alcanza el 45%. Se solicita revisar el cupo asignado.",
+      "expected": ["riesgo_credito"]
+    },
+    {
+      "id": "cls_02",
+      "text": "El VaR diario del portafolio cerro en COP 12,350 millones, superando el limite interno. La duracion del portafolio de renta fija subio a 4.8 anos ante la caida de tasas.",
+      "expected": ["riesgo_mercado"]
+    },
+    {
+      "id": "cls_03",
+      "text": "Se detecto un ataque de phishing dirigido a personal de middle-office. Tres credenciales fueron comprometidas y el SOC activo el protocolo de respuesta. Se sospecha exfiltracion de datos de clientes.",
+      "expected": ["riesgo_ciberseguridad", "riesgo_operacional"]
+    },
+    {
+      "id": "cls_04",
+      "text": "El ratio de cobertura de liquidez (LCR) cayo al 105%, apenas sobre el minimo regulatorio del 100%. La tesoreria debe activar el plan de contingencia para restaurar buffer.",
+      "expected": ["riesgo_liquidez"]
+    },
+    {
+      "id": "cls_05",
+      "text": "Durante el cierre contable se detectaron errores en la conciliacion de cuentas de inversion. La causa fue una configuracion incorrecta del nuevo modulo del core bancario tras la migracion.",
+      "expected": ["riesgo_operacional"]
+    },
+    {
+      "id": "cls_06",
+      "text": "La exposicion neta a un grupo economico supera el 10% del patrimonio tecnico. El comite debe autorizar la continuidad o exigir su reduccion progresiva.",
+      "expected": ["riesgo_credito"]
+    },
+    {
+      "id": "cls_07",
+      "text": "El riesgo de tasa de interes del libro de inversiones muestra una sensibilidad PV01 elevada. Ademas, la correlacion entre USD y acciones locales subio 15 puntos basicos afectando la diversificacion.",
+      "expected": ["riesgo_mercado"]
+    },
+    {
+      "id": "cls_08",
+      "text": "Un ransomware cifro los servidores de backup del data center secundario. El RTO proyectado pasa de 4 a 18 horas, impactando la continuidad operativa de los canales digitales.",
+      "expected": ["riesgo_ciberseguridad", "riesgo_operacional"]
+    },
+    {
+      "id": "cls_09",
+      "text": "La concentracion de depositos en los diez mayores clientes alcanza el 42%. Si estos retiraran simultaneamente, el LCR caeria por debajo del minimo regulatorio.",
+      "expected": ["riesgo_liquidez", "riesgo_credito"]
+    },
+    {
+      "id": "cls_10",
+      "text": "El cliente XYZ presenta deterioro en sus estados financieros y 90 dias de mora. Se recomienda reclasificar la exposicion a categoria C y constituir provisiones adicionales.",
+      "expected": ["riesgo_credito"]
+    },
+    {
+      "id": "cls_11",
+      "text": "El comite aprobo aumentar el limite de renta variable internacional del 25% al 28%, rechazando la propuesta original de 30% por el incremento reciente en volatilidad de los mercados emergentes.",
+      "expected": ["riesgo_mercado"]
+    },
+    {
+      "id": "cls_12",
+      "text": "El test de estres proyecta perdidas por USD 45M en un escenario de devaluacion del 20% combinado con alza de tasas de 300 pbs. El capital regulatorio absorberia el impacto pero con margen estrecho.",
+      "expected": ["riesgo_mercado"]
+    }
+  ],
+  "extraction": [
+    {
+      "id": "ext_01",
+      "doc": "doc_02_circular_sfc_riesgo_mercado.txt",
+      "expected_keywords": {
+        "limites_regulatorios": ["10%", "patrimonio", "25%"],
+        "indicadores_riesgo": ["VaR", "duracion"],
+        "decisiones_comite": [],
+        "fechas_criticas": []
+      }
+    },
+    {
+      "id": "ext_02",
+      "doc": "doc_05_acta_comite_riesgos.txt",
+      "expected_keywords": {
+        "limites_regulatorios": ["28%", "VaR"],
+        "indicadores_riesgo": ["VaR", "duracion"],
+        "decisiones_comite": ["aprob", "rechaz"],
+        "fechas_criticas": ["2025", "2026"]
+      }
+    }
+  ],
+  "summary": [
+    {
+      "id": "sum_01",
+      "doc": "doc_05_acta_comite_riesgos.txt",
+      "expected_keywords": {
+        "decisiones": ["aprob", "28%"],
+        "riesgos_identificados": ["ciberseguridad", "VaR"],
+        "acciones_pendientes": ["entregar", "informe"]
+      }
+    }
+  ]
+}

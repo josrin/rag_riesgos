@@ -1,0 +1,98 @@
+DOCUMENTO METODOLÓGICO: CÁLCULO DEL VALUE AT RISK (VaR)
+Fondo de Pensiones Voluntarias - Horizonte Seguro
+Área de Riesgo de Mercado | Versión 2.1 | Diciembre 2025
+
+1. INTRODUCCIÓN
+
+El presente documento describe la metodología empleada para el cálculo del Value at Risk (VaR) del portafolio del Fondo de Pensiones Voluntarias Horizonte Seguro. El VaR es la medida principal utilizada para cuantificar la pérdida potencial máxima del portafolio bajo condiciones normales de mercado, para un nivel de confianza y horizonte temporal determinados.
+
+2. PARÁMETROS DEL MODELO
+
+2.1 Nivel de confianza: 99% (conforme a los requerimientos de la SFC según Circular Externa 034 de 2025)
+2.2 Horizonte temporal: 10 días hábiles
+2.3 Ventana de observación: 500 días hábiles (aproximadamente 2 años de datos históricos)
+2.4 Frecuencia de cálculo: Diaria
+2.5 Moneda de reporte: Pesos colombianos (COP)
+
+3. METODOLOGÍA: SIMULACIÓN HISTÓRICA FILTRADA
+
+3.1 Descripción General
+Se emplea la metodología de Simulación Histórica Filtrada (FHS), que combina las ventajas de la simulación histórica tradicional con modelos de volatilidad condicional (GARCH). Esto permite capturar la dinámica temporal de la volatilidad sin asumir una distribución paramétrica específica para los retornos.
+
+3.2 Proceso de Cálculo
+
+Paso 1: Identificación de Factores de Riesgo
+Se identifican los factores de riesgo que afectan la valoración del portafolio:
+- Tasas de interés: Curva de rendimientos de TES (nodos: 1, 2, 3, 5, 7, 10 y 15 años)
+- Tasas corporativas: Spreads por calificación crediticia (AAA, AA+, AA, AA-, A+, A)
+- Renta variable: Índice MSCI Colcap, S&P 500, MSCI EM
+- Tipo de cambio: COP/USD, COP/EUR
+- Volatilidad implícita: Para posiciones en opciones
+
+Paso 2: Recopilación de Datos Históricos
+Se recopilan series históricas diarias de los factores de riesgo con ventana de 500 días. Los datos son obtenidos del proveedor de precios oficial (Proveedor Integral de Precios - PIP) y de Bloomberg para factores internacionales.
+
+Paso 3: Cálculo de Retornos
+Se calculan los retornos logarítmicos diarios de cada factor:
+r_t = ln(P_t / P_{t-1})
+
+Paso 4: Modelamiento GARCH
+Para cada factor de riesgo se ajusta un modelo GARCH(1,1):
+σ²_t = ω + α × ε²_{t-1} + β × σ²_{t-1}
+
+Donde:
+- σ²_t: Varianza condicional en el período t
+- ω: Constante
+- α: Coeficiente del término ARCH
+- β: Coeficiente del término GARCH
+- ε_{t-1}: Residual del período anterior
+
+Paso 5: Estandarización de Retornos
+Los retornos históricos son estandarizados dividiendo por su volatilidad condicional estimada:
+z_t = r_t / σ_t
+
+Paso 6: Re-escalamiento
+Los retornos estandarizados son re-escalados por la volatilidad condicional actual:
+r*_t = z_t × σ_T (donde T es el día actual)
+
+Paso 7: Valoración del Portafolio
+Para cada escenario, se revalúa el portafolio completo utilizando los retornos re-escalados y se calcula el P&L:
+ΔV_i = V(F_T + ΔF_i) - V(F_T)
+
+Paso 8: Cálculo del VaR
+El VaR al 99% se obtiene como el percentil 1 de la distribución de P&L simulados. Para escalar a 10 días se utiliza la regla de la raíz cuadrada del tiempo:
+VaR_10d = VaR_1d × √10
+
+4. AJUSTES ESPECIALES
+
+4.1 Efecto de liquidez: Para posiciones en instrumentos con baja liquidez (volumen promedio diario < COP 500 millones), se aplica un ajuste adicional al VaR calculando el tiempo esperado de liquidación y utilizando este como horizonte temporal en lugar de los 10 días estándar.
+
+4.2 Riesgo específico: Se agrega un componente de riesgo específico (idiosincrático) para posiciones en bonos corporativos, estimado mediante la volatilidad residual de un modelo de factores.
+
+4.3 Correlaciones en estrés: Se realizan ajustes a la estructura de correlaciones utilizando cópulas t-Student para capturar la dependencia en colas.
+
+5. BACKTESTING
+
+5.1 Se realiza backtesting diario comparando el VaR estimado para 1 día contra la pérdida real observada.
+5.2 Se utiliza el marco del semáforo de Basilea:
+- Verde: 0-4 excepciones en 250 días
+- Amarillo: 5-9 excepciones
+- Rojo: 10 o más excepciones
+
+5.3 Pruebas complementarias:
+- Test de Kupiec (proporción de excepciones)
+- Test de Christoffersen (independencia de excepciones)
+- Test de López (función de pérdida cuantitativa)
+
+5.4 Resultados recientes (últimos 250 días):
+- Excepciones observadas: 3
+- Clasificación del semáforo: Verde
+- p-valor test de Kupiec: 0.72
+- p-valor test de Christoffersen: 0.85
+
+6. LIMITACIONES DEL MODELO
+
+6.1 El VaR no captura pérdidas en eventos de cola extrema (riesgo de cola).
+6.2 La regla de la raíz cuadrada del tiempo asume retornos i.i.d., lo cual puede subestimar el riesgo en períodos de crisis prolongada.
+6.3 El modelo asume que las posiciones del portafolio son estáticas durante el horizonte de tenencia.
+6.4 Como complemento al VaR, se calcula el Expected Shortfall (CVaR) al 97.5% para capturar mejor el riesgo de cola.
