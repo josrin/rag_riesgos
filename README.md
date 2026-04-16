@@ -29,7 +29,7 @@ Fusion, lo que mejora la precisión sobre siglas y jerga regulatoria
 - Decisiones de diseño → [`DESIGN.md`](DESIGN.md)
 - Plan de ejecución y roadmap → [`PLAN.md`](PLAN.md)
 - Evaluación con 12 preguntas y fallos detectados → [`EVALUACION.md`](EVALUACION.md)
-- Mejoras pendientes / descartadas → [`NEXT_STEPS.md`](NEXT_STEPS.md)
+- Suite de tests unitarios (171 tests, 7.4 s) → [`test_unitarios.md`](test_unitarios.md)
 
 ---
 
@@ -221,9 +221,9 @@ Con la UI abierta haz preguntas en lenguaje natural. Ejemplos:
 La respuesta incluye una sección **Fuentes:** citando archivo, página y
 sección.
 
-### 3.5 Dashboard e historial
+### 3.5 Pestañas de la UI
 
-La UI tiene tres pestañas:
+La UI tiene cuatro pestañas:
 
 - **Consulta** — pregunta + respuesta con streaming y aviso de
   inconsistencias faithfulness cuando las haya.
@@ -233,6 +233,22 @@ La UI tiene tres pestañas:
   citados, latencia por modelo LLM, preguntas más frecuentes y tabla
   de warnings faithfulness detectados. Incluye expander con métricas
   del cache LRU de embeddings (hits, misses, hit rate).
+- **Asistente** — tres tareas especializadas que corren **Zero-shot
+  vs Chain-of-Thought lado a lado** (dos columnas por tarea, latencia
+  por técnica, botón "Exportar comparación markdown"). Las
+  ejecuciones son **efímeras**: no se registran en Historial ni
+  Dashboard.
+  - *Clasificación de riesgo* — pega un texto y se clasifica
+    multi-etiqueta (crédito, mercado, operacional, liquidez,
+    ciberseguridad) con peso por categoría (suma ≤ 1.0) y barra.
+  - *Información clave* — multiselect de documentos de `docs/`;
+    extrae límites regulatorios, indicadores de riesgo, decisiones
+    del comité y fechas críticas vía **map-reduce** sobre los chunks
+    indexados, con barra de progreso por chunk.
+  - *Resumen ejecutivo* — multiselect restringido a actas
+    (documentos cuyo nombre en lowercase contenga `acta`); produce
+    resumen estructurado en tres campos: decisiones, riesgos
+    identificados, acciones pendientes.
 - **Historial (30 días)** — listado expandible de las últimas 200
   consultas con sus fuentes originales. Los registros con más de
   `LOG_RETENTION_DAYS` días se purgan automáticamente.
@@ -241,25 +257,51 @@ La UI tiene tres pestañas:
 
 ### 3.6 Evaluación automatizada
 
-Las 12 preguntas de `eval/ground_truth.jsonl` miden el sistema en 3
-dimensiones:
+Las 12 preguntas de `eval/ground_truth.jsonl` miden el pipeline RAG
+en 3 dimensiones:
 
 ```powershell
-# Corrida única → eval/report.json
+# Corrida única del pipeline RAG → eval/report.json
 python -m scripts.eval
 
-# Comparar varios LLMs → eval/compare_report.json
+# Comparar varios LLMs sobre el mismo ground truth → eval/compare_report.json
 python -m scripts.eval_compare llama3 llama3.1:8b mistral
 
 # Sweep de alpha del reranker blended (solo con RERANKER_ENABLED=true)
 python -m scripts.eval_alpha_sweep
+
+# Eval comparativa del Asistente: Zero-shot vs Chain-of-Thought
+# sobre las 3 tareas (12 casos de clasificación + 2 de extracción
+# + 1 de resumen). → eval/assistant_report.json
+python -m scripts.eval_assistant
 ```
 
-Métricas: `source_recall@5` (el top-k contiene algún chunk del/los
-documento(s) esperado(s)), `answer_accuracy` (fracción de literales
-`must_contain` presentes en la respuesta), `faithfulness` (los
-literales que aparecen en la respuesta también aparecen en el
+Métricas del pipeline RAG: `source_recall@5` (el top-k contiene algún
+chunk del/los documento(s) esperado(s)), `answer_accuracy` (fracción
+de literales `must_contain` presentes en la respuesta), `faithfulness`
+(los literales que aparecen en la respuesta también aparecen en el
 contexto recuperado), latencia p50/p95.
+
+Métricas del Asistente: **F1 micro-promedio** por técnica en
+clasificación (precision, recall, F1), **cobertura de keywords** en
+extracción y resumen (fracción de keywords esperadas que aparecen en
+los items generados), latencia total y por caso. El reporte JSON
+permite auditar cada caso individual.
+
+### 3.7 Tests unitarios
+
+Suite de 171 tests en `tests/` (runtime 7.4 s) que cubre chunking,
+ingestion, faithfulness, retriever BM25, query decomposer, logger y
+los 5 módulos del asistente. Detalle en
+[`test_unitarios.md`](test_unitarios.md).
+
+```powershell
+# Instalar dependencias de dev (pytest) solo la primera vez
+pip install -r requirements-dev.txt
+
+# Correr la suite completa
+python -m pytest
+```
 
 ---
 
@@ -274,7 +316,7 @@ rag-riesgos/
 │   └── queries.db            # log SQLite de consultas (se genera con el primer ask)
 ├── src/
 │   ├── config.py             # configuracion central desde .env
-│   ├── ingestion.py          # extraccion PDF + OCR fallback + .txt
+│   ├── ingestion.py          # extraccion PDF + OCR fallback + .txt (+ tablas via pdfplumber)
 │   ├── chunking.py           # fragmentacion + section_hint para citas
 │   ├── embeddings.py         # bge-m3 via Ollama
 │   ├── vectorstore.py        # ChromaDB persistente
@@ -286,7 +328,15 @@ rag-riesgos/
 │   ├── dashboard.py          # observabilidad sobre queries.db (pandas + streamlit)
 │   ├── corpus_sync.py        # sincronizacion incremental docs/ <-> ChromaDB
 │   ├── logger_db.py          # log SQLite con retencion 30 dias
-│   └── pipeline.py           # orquestacion index_corpus() y ask()/ask_stream()
+│   ├── pipeline.py           # orquestacion index_corpus() y ask()/ask_stream()
+│   └── assistant/            # asistente de tareas especializadas
+│       ├── prompts.py        # templates zero-shot y CoT para las 3 tareas
+│       ├── llm_utils.py      # cliente Ollama + parser JSON tolerante
+│       ├── classifier.py     # clasificacion multi-etiqueta con peso
+│       ├── extractor.py      # extraccion 4 categorias via map-reduce
+│       ├── summarizer.py     # resumen de actas via map-reduce
+│       ├── corpus_utils.py   # listado de docs + filtro "acta"
+│       └── ui.py             # render de la pestaña Asistente
 ├── scripts/
 │   ├── index_documents.py    # reindexar corpus completo desde consola
 │   ├── sync_docs.py          # sincronizacion incremental (one-shot)
@@ -294,20 +344,27 @@ rag-riesgos/
 │   ├── eval.py               # harness de evaluacion (recall, accuracy, faith.)
 │   ├── eval_compare.py       # comparar el mismo harness contra varios LLMs
 │   ├── eval_alpha_sweep.py   # sweep de RERANKER_ALPHA para calibrar blend
+│   ├── eval_assistant.py     # eval comparativa Zero-shot vs CoT del asistente
 │   └── setup_ollama.ps1      # instalar Ollama + modelos (PowerShell)
 ├── eval/
-│   ├── ground_truth.jsonl    # 12 preguntas con expected_sources y must_contain
-│   ├── report.json           # ultimo reporte de eval
-│   ├── compare_report.json   # ultima comparacion entre LLMs
-│   └── alpha_sweep.json      # ultimo sweep del reranker blended
-├── app.py                    # UI Streamlit
+│   ├── ground_truth.jsonl             # 12 preguntas con expected_sources y must_contain
+│   ├── assistant_ground_truth.json    # casos de clasificacion, extraccion y resumen
+│   ├── report.json                    # ultimo reporte de eval (pipeline RAG)
+│   ├── compare_report.json            # ultima comparacion entre LLMs
+│   ├── alpha_sweep.json               # ultimo sweep del reranker blended
+│   └── assistant_report.json          # ultimo reporte del eval del asistente
+├── tests/                    # 171 tests pytest (chunking, ingestion, retriever,
+│                             # faithfulness, logger, asistente) — ver test_unitarios.md
+├── app.py                    # UI Streamlit (4 pestañas: Consulta, Dashboard, Asistente, Historial)
 ├── requirements.txt          # dependencias Python (con prerequisitos documentados)
+├── requirements-dev.txt      # dependencias de dev (pytest)
+├── pytest.ini                # configuracion de pytest
 ├── .env.example              # plantilla de configuracion
 ├── .gitignore
 ├── DESIGN.md                 # justificacion de decisiones de diseño
 ├── PLAN.md                   # plan de ejecucion y roadmap
 ├── EVALUACION.md             # evaluacion con 12 preguntas (congelado)
-├── NEXT_STEPS.md             # roadmap de mejoras con alcance acordado
+├── test_unitarios.md         # inventario de la suite de tests unitarios
 └── README.md                 # este archivo
 ```
 
