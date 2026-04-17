@@ -20,6 +20,7 @@ _NO_MATCH_MARKER = "no encuentro esta informacion"
 
 
 def _normalize(text: str) -> str:
+    """Quita acentos y pasa a lowercase para comparar texto sin ruido."""
     import unicodedata
 
     text = unicodedata.normalize("NFD", text)
@@ -28,6 +29,7 @@ def _normalize(text: str) -> str:
 
 
 def _load_dataframe() -> pd.DataFrame:
+    """Carga el historico de queries y agrega columnas derivadas para las vistas."""
     rows = logger_db.all_queries()
     if not rows:
         return pd.DataFrame()
@@ -41,6 +43,7 @@ def _load_dataframe() -> pd.DataFrame:
 
 
 def _source_frequencies(df: pd.DataFrame) -> pd.DataFrame:
+    """Cuenta cuantas veces aparece cada documento citado en las consultas."""
     if df.empty:
         return pd.DataFrame(columns=["source", "citas"])
     counts: dict[str, int] = {}
@@ -54,6 +57,7 @@ def _source_frequencies(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def _top_questions(df: pd.DataFrame, n: int = 10) -> pd.DataFrame:
+    """Top-N preguntas mas repetidas con su tasa de 'no encuentro' y p50 latencia."""
     if df.empty:
         return pd.DataFrame(columns=["question", "veces", "no_match"])
     agg = df.groupby("question").agg(
@@ -65,6 +69,7 @@ def _top_questions(df: pd.DataFrame, n: int = 10) -> pd.DataFrame:
 
 
 def render() -> None:
+    """Pinta el dashboard completo en la pestana correspondiente de Streamlit."""
     st.header("Dashboard de consultas")
     df = _load_dataframe()
 

@@ -1,5 +1,4 @@
 from src.chunking import (
-    _HEADING_RE,
     _TABLE_RE,
     _all_headings,
     _section_hint,

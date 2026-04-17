@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_client() -> chromadb.api.ClientAPI:
+    """Cliente persistente de Chroma apuntando a `settings.chroma_dir`."""
     settings.chroma_dir.mkdir(parents=True, exist_ok=True)
     return chromadb.PersistentClient(
         path=str(settings.chroma_dir),
@@ -23,6 +24,7 @@ def get_client() -> chromadb.api.ClientAPI:
 
 
 def get_collection(reset: bool = False):
+    """Coleccion unica `riesgos_corpus` con distancia coseno; `reset=True` la borra antes."""
     client = get_client()
     if reset:
         try:
@@ -37,6 +39,7 @@ def get_collection(reset: bool = False):
 
 
 def upsert_chunks(chunks: Sequence[dict], embeddings: Sequence[Sequence[float]]) -> None:
+    """Inserta/actualiza chunks; id derivado de (source, page, chunk_index)."""
     coll = get_collection()
     ids = [f"{c['source']}::p{c['page']}::c{c['chunk_index']}" for c in chunks]
     metadatas = [
@@ -56,6 +59,7 @@ def upsert_chunks(chunks: Sequence[dict], embeddings: Sequence[Sequence[float]])
 
 
 def query(embedding: Sequence[float], top_k: int | None = None) -> list[dict]:
+    """Busqueda por similitud; retorna `[{text, meta, distance}]` ordenado por distancia."""
     coll = get_collection()
     res = coll.query(
         query_embeddings=[list(embedding)],
@@ -69,4 +73,5 @@ def query(embedding: Sequence[float], top_k: int | None = None) -> list[dict]:
 
 
 def count() -> int:
+    """Numero total de chunks indexados en la coleccion actual."""
     return get_collection().count()

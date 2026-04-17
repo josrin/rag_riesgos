@@ -24,10 +24,12 @@ def acta_docs() -> list[str]:
 
 
 def _empty_result() -> dict[str, list[str]]:
+    """Esqueleto con los 3 campos vacios; usado como default/fallback."""
     return {k: [] for k in SUMMARY_FIELDS}
 
 
 def _sanitize(raw: object) -> dict[str, list[str]]:
+    """Normaliza la salida del LLM a `{field: [str, ...]}` con los 3 campos fijos."""
     out = _empty_result()
     if not isinstance(raw, dict):
         return out
@@ -51,6 +53,7 @@ def _sanitize(raw: object) -> dict[str, list[str]]:
 
 
 def _merge_partials(partials: Sequence[dict]) -> dict[str, list[str]]:
+    """Fallback determinista: deduplica items de resumenes parciales sin pasar por LLM."""
     merged = _empty_result()
     seen: dict[str, set[str]] = {k: set() for k in SUMMARY_FIELDS}
     for part in partials:
@@ -70,6 +73,7 @@ def summarize(
     technique: str,
     progress_cb: ProgressCb | None = None,
 ) -> dict[str, list[str]]:
+    """Resumen ejecutivo de un acta con map-reduce; fallback a merge local si el reduce falla."""
     if technique not in ("zero_shot", "cot"):
         raise ValueError(f"Tecnica no soportada: {technique}")
 

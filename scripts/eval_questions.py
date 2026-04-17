@@ -7,7 +7,7 @@ import time
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
 
-from src.pipeline import ask
+from src.pipeline import ask  # noqa: E402
 
 QUESTIONS = [
     # --- Nivel 1: lookup simple ---
@@ -31,6 +31,7 @@ QUESTIONS = [
 
 
 def main() -> None:
+    """Corre las 12 preguntas de ejemplo e imprime respuestas con latencia y fuentes."""
     total_t = time.time()
     for i, (lvl, q) in enumerate(QUESTIONS, 1):
         print("=" * 90)
@@ -40,7 +41,7 @@ def main() -> None:
         print(r["answer"])
         print()
         print(f"Latencia: {r['latency_ms']} ms | Chunks recuperados: "
-              + ", ".join(f"{s['source']}[§{s.get('section_hint','')[:30]}]" for s in r["sources"]))
+              + ", ".join(f"{s['source']}[§{s.get('section_hint', '')[:30]}]" for s in r["sources"]))
         print()
     print("=" * 90)
     print(f"Total: {time.time() - total_t:.1f} s")

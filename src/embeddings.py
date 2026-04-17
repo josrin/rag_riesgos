@@ -28,20 +28,24 @@ _CACHE_SIZE = 2048
 
 @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=1, max=8))
 def _fetch_embedding(text: str, model: str) -> tuple[float, ...]:
+    """Llamada cruda a Ollama con reintento exponencial ante errores transitorios."""
     resp = _client.embeddings(model=model, prompt=text)
     return tuple(resp["embedding"])
 
 
 @lru_cache(maxsize=_CACHE_SIZE)
 def _cached_embed(text: str, model: str) -> tuple[float, ...]:
+    """Capa de cache LRU; la clave es (texto, modelo) para aislar modelos."""
     return _fetch_embedding(text, model)
 
 
 def embed_one(text: str) -> list[float]:
+    """Devuelve el embedding de un texto, sirviendolo del cache LRU si existe."""
     return list(_cached_embed(text, settings.embedding_model))
 
 
 def embed_many(texts: Sequence[str]) -> list[list[float]]:
+    """Embebe una secuencia de textos preservando el orden; loggea cada 25."""
     out: list[list[float]] = []
     for i, t in enumerate(texts, 1):
         out.append(embed_one(t))
@@ -51,6 +55,7 @@ def embed_many(texts: Sequence[str]) -> list[list[float]]:
 
 
 def cache_stats() -> dict:
+    """Expone hits/misses/tamano/hit_rate del cache para el dashboard."""
     info = _cached_embed.cache_info()
     return {
         "hits": info.hits,
@@ -62,4 +67,5 @@ def cache_stats() -> dict:
 
 
 def clear_cache() -> None:
+    """Vacia el cache (util en tests y al cambiar EMBEDDING_MODEL en runtime)."""
     _cached_embed.cache_clear()

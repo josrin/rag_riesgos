@@ -355,6 +355,79 @@ Tareas:
 
 ---
 
+## Iteración #6 — Calidad y limpieza de código (2026-04-16)
+
+Barrido sistemático para dejar el proyecto con PEP 8 al 100 %,
+docstrings en todas las funciones, modularidad sin módulos gigantes
+y tests que cubren también los módulos que antes quedaban fuera.
+
+### Fase A — PEP 8 al 100 %
+- [x] Instalar `flake8==7.3.0` y correr sobre `src/`, `scripts/`,
+      `tests/`, `app.py` con `--max-line-length=120`. Baseline inicial:
+      13 issues (`E402`, `F401`, `E231`, `E203`).
+- [x] Corregir los 13 issues: imports no usados removidos, `# noqa: E402`
+      en los scripts que reasignan `sys.stdout` a UTF-8 antes de
+      importar, espacios normalizados.
+- [x] flake8 final: **0 issues** en las 4 carpetas.
+
+### Fase B — Comentarios inline en lógica compleja
+- [x] `retriever._hybrid_rank`: bloque RRF documentado paso a paso
+      (por qué `k=60`, por qué sumar y no promediar, qué aporta cada
+      ranking).
+- [x] `ingestion._extract_page_tables_and_text`: geometría de bboxes
+      de pdfplumber + contención estricta explicada inline.
+- [x] `llm_utils.parse_json_response`: trailing commas y elección de
+      delimitador primario documentados inline.
+
+### Fase C — Modularidad (partición de `ui.py`)
+- [x] `src/assistant/ui.py` (371 líneas, 3 responsabilidades) se
+      dividió en 5 módulos:
+  - `ui.py` (dispatcher, 30 L): selector de tarea + delegación.
+  - `ui_common.py`: constantes compartidas (TECHNIQUE_LABELS + dicts
+    pretty).
+  - `ui_classification.py`: render + markdown de clasificación.
+  - `ui_extraction.py`: render + markdown de extracción.
+  - `ui_summary.py`: render + markdown de resumen ejecutivo.
+- [x] `app.py` no requiere cambios (sigue llamando a
+      `assistant_ui.render()`).
+
+### Fase D — Cobertura de tests ampliada
+- [x] Nuevos tests unitarios para los 7 módulos sin cobertura:
+  - `test_config.py` (6 tests): Settings frozen, paths absolutos,
+    overrides por env var.
+  - `test_generator.py` (11 tests): `_format_context`, `_build_messages`,
+    fast-paths sin LLM.
+  - `test_vectorstore.py` (9 tests): upsert/query contra ChromaDB
+    real aislado en `tmp_path`.
+  - `test_reranker.py` (10 tests): `_minmax`, bypass disabled, blending
+    con CrossEncoder mockeado (numpy stub).
+  - `test_embeddings.py` (11 tests): cache LRU, dedup en batch,
+    stats coherentes.
+  - `test_pipeline.py` (10 tests): `ask`, `ask_stream`, `warmup` con
+    todas las dependencias mockeadas.
+  - `test_dashboard.py` (12 tests): `_normalize`, `_source_frequencies`,
+    `_top_questions`, `_load_dataframe`.
+- [x] Suite completa: **234/234 passing** en ~5.6 s.
+
+### Fase E — Docstrings al 100 %
+- [x] Audit con walker AST: 92 funciones sin docstring detectadas
+      (públicas y privadas en `src/`, `scripts/` y `app.py`).
+- [x] Agregadas las 92 docstrings de una línea, explicando el *qué*
+      cuando no es obvio desde la firma.
+- [x] Audit post-cambio: **0 funciones sin docstring**.
+
+### Fase F — Documentación
+- [x] `README.md` — conteo de tests 234 y estructura de assistant
+      actualizada con los 4 nuevos `ui_*.py`.
+- [x] `DESIGN.md` — nueva sección §10 "Calidad de código" con las
+      tres invariantes (PEP 8, docstrings, tests) y subsección en §8
+      explicando la partición del asistente.
+- [x] `PLAN.md` — esta iteración.
+- [x] `test_unitarios.md` — 7 módulos nuevos documentados + update
+      de la sección "Cobertura no incluida".
+
+---
+
 ## Deuda técnica conocida
 - OCR dependiente de binarios externos (Tesseract, Poppler). Documentar
   bien su instalación y validar en máquina limpia.
@@ -364,14 +437,12 @@ Tareas:
   encabezados (por ejemplo, aprovechando la jerarquia de headings que
   pdfplumber expone).
 - ~~No hay tests unitarios (pytest)~~ — resuelto 2026-04-16. Suite de
-  **107 tests** en `tests/` cubriendo chunking (_section_hint,
-  _split_tables, chunk_pages, regex), ingestion (_clean,
-  _table_to_markdown), faithfulness (claims numero/articulo/fecha),
-  query_decomposer (is_compound + decompose con LLM mockeado),
-  retriever (tokenizer BM25 + stopwords ES) y logger_db (schema,
-  log_query, recent, purge_old con DB aislada en tmp). pytest es
-  dev-only: `pip install -r requirements-dev.txt`. Correr con
-  `python -m pytest`. Runtime 5.9 s.
+  **234 tests** en `tests/` cubriendo chunking, ingestion,
+  faithfulness, query_decomposer, retriever, logger_db, los 5 módulos
+  del asistente, y en la iteración #6 se añadió cobertura de config,
+  embeddings, generator, vectorstore, reranker, pipeline y dashboard.
+  pytest es dev-only: `pip install -r requirements-dev.txt`. Correr
+  con `python -m pytest`. Runtime ~5.6 s.
 - Tablas en PDFs: actualmente solo se detectan tablas markdown
   (`| ... |`). Para PDFs reales con tablas nativas habrá que integrar
   `pdfplumber.extract_tables()`.

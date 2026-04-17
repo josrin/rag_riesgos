@@ -49,6 +49,7 @@ _CLS_FORMAT = (
 
 
 def classify_zero_shot(text: str) -> tuple[str, str]:
+    """Prompt zero-shot de clasificacion; devuelve `(system, user)` listos para Ollama."""
     system = (
         "Eres un experto en gestion de riesgos financieros. Clasifica el "
         f"texto en una o mas de estas categorias: {_LABELS_LIST}. "
@@ -60,6 +61,7 @@ def classify_zero_shot(text: str) -> tuple[str, str]:
 
 
 def classify_cot(text: str) -> tuple[str, str]:
+    """Prompt chain-of-thought de clasificacion con 4 pasos de razonamiento."""
     system = (
         "Eres un experto en gestion de riesgos financieros. Clasifica el "
         f"texto en una o mas de estas categorias: {_LABELS_LIST}.\n\n"
@@ -95,6 +97,7 @@ _EXTRACT_FORMAT = (
 
 
 def extract_map_zero_shot(chunk_text: str, doc_name: str) -> tuple[str, str]:
+    """Prompt map (zero-shot) de extraccion para un chunk individual."""
     system = (
         "Eres un experto en analisis de documentos regulatorios y de "
         "riesgo. Extrae del fragmento items que correspondan a estas "
@@ -114,6 +117,7 @@ def extract_map_zero_shot(chunk_text: str, doc_name: str) -> tuple[str, str]:
 
 
 def extract_map_cot(chunk_text: str, doc_name: str) -> tuple[str, str]:
+    """Prompt map (chain-of-thought) de extraccion con filtrado de falsos positivos."""
     system = (
         "Eres un experto en analisis de documentos regulatorios y de "
         "riesgo. Tu tarea es extraer items de 4 categorias, razonando "
@@ -172,6 +176,7 @@ _SUMMARY_FORMAT = (
 
 
 def summarize_map_zero_shot(chunk_text: str, doc_name: str) -> tuple[str, str]:
+    """Prompt map (zero-shot) de resumen para un chunk de acta."""
     system = (
         "Eres un analista que prepara resumenes ejecutivos de actas de "
         "comites de riesgos. Extrae del fragmento:\n"
@@ -186,6 +191,7 @@ def summarize_map_zero_shot(chunk_text: str, doc_name: str) -> tuple[str, str]:
 
 
 def summarize_map_cot(chunk_text: str, doc_name: str) -> tuple[str, str]:
+    """Prompt map (chain-of-thought) de resumen con clasificacion explicita por campo."""
     system = (
         "Eres un analista que prepara resumenes ejecutivos de actas de "
         "comites de riesgos. Razona paso a paso para evitar mezclar "
@@ -214,6 +220,7 @@ def summarize_map_cot(chunk_text: str, doc_name: str) -> tuple[str, str]:
 
 
 def summarize_reduce(partials: Sequence[dict], doc_name: str) -> tuple[str, str]:
+    """Prompt reduce: consolida los resumenes parciales por fragmento en uno solo."""
     import json as _json
 
     partials_text = _json.dumps(list(partials), ensure_ascii=False, indent=2)

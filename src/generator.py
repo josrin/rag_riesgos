@@ -31,6 +31,7 @@ SYSTEM_PROMPT = (
 
 
 def _format_context(hits: Sequence[dict]) -> str:
+    """Renderiza los chunks como bloques '[Fragmento N]' separados para el LLM."""
     blocks = []
     for i, h in enumerate(hits, 1):
         m = h["meta"]
@@ -41,6 +42,7 @@ def _format_context(hits: Sequence[dict]) -> str:
 
 
 def _build_messages(question: str, hits: Sequence[dict]) -> list[dict]:
+    """Construye el par (system, user) con contexto embebido para la llamada al LLM."""
     context = _format_context(hits)
     user_prompt = (
         f"Pregunta del analista de riesgos:\n{question}\n\n"
@@ -54,6 +56,7 @@ def _build_messages(question: str, hits: Sequence[dict]) -> list[dict]:
 
 
 def answer(question: str, hits: Sequence[dict]) -> str:
+    """Respuesta no-streaming: si no hay hits devuelve el mensaje de 'no encuentro'."""
     if not hits:
         return "No encuentro esta informacion en los documentos indexados."
     resp = _client.chat(

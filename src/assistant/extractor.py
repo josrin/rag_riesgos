@@ -25,6 +25,7 @@ ProgressCb = Callable[[str, int, int], None]
 
 
 def _empty_result() -> dict[str, list[str]]:
+    """Esqueleto con las 4 categorias vacias; usado como default/fallback."""
     return {k: [] for k in EXTRACT_CATEGORIES}
 
 
@@ -81,6 +82,7 @@ def _extract_one_doc(
     doc_idx: int,
     total_docs: int,
 ) -> dict[str, list[str]]:
+    """Map-reduce sobre los chunks de un documento; fallback a merge local si el reduce falla."""
     chunks = corpus_utils.chunks_for_doc(doc_name)
     if not chunks:
         logger.warning("Sin chunks para %s", doc_name)

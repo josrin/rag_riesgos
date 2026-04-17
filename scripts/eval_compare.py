@@ -11,18 +11,17 @@ from __future__ import annotations
 
 import io
 import json
-import statistics
 import sys
 import time
 from pathlib import Path
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
 
-import ollama
+import ollama  # noqa: E402
 
-from src import generator
-from src.config import settings as _settings
-from scripts.eval import evaluate
+from src import generator  # noqa: E402
+from src.config import settings as _settings  # noqa: E402
+from scripts.eval import evaluate  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 REPORT_PATH = ROOT / "eval" / "compare_report.json"
@@ -36,6 +35,7 @@ def _override_llm_model(model: str) -> None:
 
 
 def _is_model_available(model: str) -> bool:
+    """True si Ollama lista el modelo (con o sin tag ':latest')."""
     try:
         listing = ollama.list()
         names = {m.model for m in listing.models}
@@ -45,6 +45,7 @@ def _is_model_available(model: str) -> bool:
 
 
 def main(models: list[str]) -> None:
+    """Itera los modelos, corre el harness en cada uno y compara metricas."""
     original = _settings.llm_model
     comparison: list[dict] = []
     try:

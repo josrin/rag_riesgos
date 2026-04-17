@@ -27,6 +27,7 @@ CREATE INDEX IF NOT EXISTS idx_queries_ts ON queries(ts);
 
 
 def _ensure_db() -> Path:
+    """Crea la DB y migra columna `warnings_json` si falta (idempotente)."""
     settings.queries_db.parent.mkdir(parents=True, exist_ok=True)
     with sqlite3.connect(settings.queries_db) as con:
         con.executescript(SCHEMA)
@@ -38,6 +39,7 @@ def _ensure_db() -> Path:
 
 @contextmanager
 def _conn() -> Iterator[sqlite3.Connection]:
+    """Context manager que garantiza schema + commit/close + row_factory."""
     _ensure_db()
     con = sqlite3.connect(settings.queries_db)
     con.row_factory = sqlite3.Row
@@ -55,6 +57,7 @@ def log_query(
     latency_ms: int,
     warnings: Sequence[dict] | None = None,
 ) -> None:
+    """Persiste una consulta con su respuesta, fuentes, latencia y warnings."""
     with _conn() as con:
         con.execute(
             "INSERT INTO queries(ts, question, answer, sources_json, latency_ms, "
@@ -82,6 +85,7 @@ def purge_old() -> int:
 
 
 def recent(limit: int = 50) -> list[dict]:
+    """Devuelve las ultimas `limit` consultas, mas recientes primero."""
     with _conn() as con:
         rows = con.execute(
             "SELECT id, ts, question, answer, sources_json, latency_ms, "

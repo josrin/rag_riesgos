@@ -33,21 +33,25 @@ REPORT_PATH = ROOT / "eval" / "report.json"
 
 
 def _norm(s: str) -> str:
+    """Lowercase sin acentos para comparar literales de forma robusta."""
     s = unicodedata.normalize("NFD", s)
     s = "".join(c for c in s if unicodedata.category(c) != "Mn")
     return s.lower()
 
 
 def _contains(haystack: str, needle: str) -> bool:
+    """True si `needle` aparece en `haystack` tras normalizar ambos."""
     return _norm(needle) in _norm(haystack)
 
 
 def load_ground_truth() -> list[dict]:
+    """Lee `eval/ground_truth.jsonl` y devuelve la lista de casos."""
     with GROUND_TRUTH.open(encoding="utf-8") as f:
         return [json.loads(line) for line in f if line.strip()]
 
 
 def evaluate() -> dict:
+    """Corre el harness sobre todos los casos y devuelve `{results, aggregate}`."""
     cases = load_ground_truth()
     results: list[dict] = []
     t_all = time.time()
@@ -113,6 +117,7 @@ def evaluate() -> dict:
 
 
 def render(report: dict) -> None:
+    """Imprime tabla de casos + totales agregados en consola."""
     print(f"{'ID':<5} {'Lvl':<5} {'Rec':<4} {'Acc':<5} {'Fth':<5} {'Lat ms':<8} Missing")
     print("-" * 90)
     for r in report["results"]:
@@ -135,6 +140,7 @@ def render(report: dict) -> None:
 
 
 def main() -> None:
+    """Entrypoint: corre evaluate(), imprime la tabla y guarda el JSON."""
     report = evaluate()
     render(report)
     REPORT_PATH.write_text(

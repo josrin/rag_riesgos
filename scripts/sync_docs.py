@@ -17,10 +17,12 @@ from src import corpus_sync
 
 
 def _fmt_list(lst: list[str]) -> str:
+    """Formatea una lista de nombres para impresion multilinea o '(ninguno)' si vacia."""
     return "\n  ".join(lst) if lst else "(ninguno)"
 
 
 def main() -> None:
+    """Entrypoint CLI: muestra delta pendiente y sincroniza si no es `--dry-run`."""
     dry = "--dry-run" in sys.argv[1:]
     corpus_sync.bootstrap_if_needed()
     state = corpus_sync.scan_state()

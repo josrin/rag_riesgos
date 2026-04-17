@@ -40,6 +40,7 @@ _STOPWORDS_ES = frozenset(
 
 
 def _strip_accents(text: str) -> str:
+    """Quita acentos via NFD + filtrado de combining marks."""
     import unicodedata
 
     return "".join(
@@ -48,11 +49,13 @@ def _strip_accents(text: str) -> str:
 
 
 def _tokenize(text: str) -> list[str]:
+    """Tokeniza para BM25: lowercase, sin stopwords ES y sin tokens de 1 char."""
     toks = _TOKEN_RE.findall(text.lower())
     return [t for t in toks if _strip_accents(t) not in _STOPWORDS_ES and len(t) > 1]
 
 
 def _chunk_id(meta: dict) -> str:
+    """Id estable derivado de (source, page, chunk_index); misma clave que en upsert."""
     return f"{meta['source']}::p{meta['page']}::c{meta['chunk_index']}"
 
 
@@ -71,10 +74,16 @@ def _hybrid_rank(question: str) -> list[tuple[str, float, dict, str, float]]:
     if not ids:
         return []
 
+    # Ranking lexico (BM25): tokenizamos con stopwords ES y pedimos scores
+    # para TODOS los chunks. Ordenamos por score descendente para obtener
+    # posiciones (rank) que alimentan RRF.
     bm25 = BM25Okapi([_tokenize(d) for d in docs])
     bm25_scores = bm25.get_scores(_tokenize(question))
     bm25_rank = sorted(range(len(ids)), key=lambda i: -bm25_scores[i])
 
+    # Ranking vectorial: top_k=len(ids) fuerza un ranking global, no un
+    # top-N. Guardamos la distancia para exponerla en el hit final (la
+    # UI la muestra; el generator no la usa).
     q_vec = embeddings.embed_one(question)
     vec_hits = vectorstore.query(q_vec, top_k=len(ids))
     vec_rank: dict[str, int] = {}
@@ -84,6 +93,11 @@ def _hybrid_rank(question: str) -> list[tuple[str, float, dict, str, float]]:
         vec_rank[hid] = rank
         vec_dist[hid] = h["distance"]
 
+    # Reciprocal Rank Fusion: score = sum_{sistemas} 1 / (k + rank_i).
+    # La constante k=60 (Cormack 2009) amortigua las diferencias entre
+    # ranks altos — un chunk #1 no aplasta a uno #2. Sumamos en vez de
+    # promediar para que los chunks que aparecen en AMBOS rankings
+    # (lexico + vectorial) suban al tope incluso si en ninguno estan #1.
     rrf: dict[str, float] = {}
     for rank, idx in enumerate(bm25_rank):
         rrf[ids[idx]] = rrf.get(ids[idx], 0.0) + 1.0 / (_RRF_K + rank)
@@ -99,6 +113,7 @@ def _hybrid_rank(question: str) -> list[tuple[str, float, dict, str, float]]:
 
 
 def _build_hit(row: tuple[str, float, dict, str, float]) -> dict:
+    """Serializa la tupla interna del ranker al dict que consume el resto del pipeline."""
     _hid, score, meta, text, dist = row
     return {
         "text": text,
@@ -109,6 +124,7 @@ def _build_hit(row: tuple[str, float, dict, str, float]) -> dict:
 
 
 def hybrid_query(question: str, top_k: int | None = None) -> list[dict]:
+    """Recupera top-k chunks para una pregunta simple con fusion BM25 + vectorial."""
     k = top_k or settings.top_k
     ranked = _hybrid_rank(question)
     hits = [_build_hit(r) for r in ranked[:k]]

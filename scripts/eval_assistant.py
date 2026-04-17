@@ -35,12 +35,14 @@ REPORT_PATH = ROOT / "eval" / "assistant_report.json"
 
 
 def _norm(s: str) -> str:
+    """Lowercase sin acentos para comparar keywords contra items extraidos."""
     s = unicodedata.normalize("NFD", s)
     s = "".join(c for c in s if unicodedata.category(c) != "Mn")
     return s.lower()
 
 
 def _prf(expected: set[str], predicted: set[str]) -> tuple[float, float, float]:
+    """Calcula precision, recall y F1 de dos sets de labels (multi-etiqueta)."""
     tp = len(expected & predicted)
     fp = len(predicted - expected)
     fn = len(expected - predicted)
@@ -54,6 +56,7 @@ def _prf(expected: set[str], predicted: set[str]) -> tuple[float, float, float]:
 
 
 def run_classification(gt: list[dict]) -> dict:
+    """Corre clasificacion ZS y CoT sobre los casos; devuelve metricas micro + por caso."""
     results = {"zero_shot": {"cases": []}, "cot": {"cases": []}}
     for tech in ("zero_shot", "cot"):
         total_tp = total_fp = total_fn = 0
@@ -97,6 +100,7 @@ def run_classification(gt: list[dict]) -> dict:
 
 
 def _keyword_coverage(items: list[str], keywords: list[str]) -> tuple[float, list[str]]:
+    """Fraccion de keywords esperados que aparecen en los items, con la lista de hits."""
     if not keywords:
         return 1.0, []
     joined = " || ".join(_norm(it) for it in items)
@@ -105,6 +109,7 @@ def _keyword_coverage(items: list[str], keywords: list[str]) -> tuple[float, lis
 
 
 def run_extraction(gt: list[dict]) -> dict:
+    """Corre extraccion ZS y CoT sobre los casos y calcula cobertura de keywords."""
     results = {"zero_shot": {"cases": []}, "cot": {"cases": []}}
     for tech in ("zero_shot", "cot"):
         total_lat = 0.0
@@ -150,6 +155,7 @@ def run_extraction(gt: list[dict]) -> dict:
 
 
 def run_summary(gt: list[dict]) -> dict:
+    """Corre resumen ZS y CoT sobre las actas y calcula cobertura de keywords."""
     results = {"zero_shot": {"cases": []}, "cot": {"cases": []}}
     for tech in ("zero_shot", "cot"):
         total_lat = 0.0
@@ -194,6 +200,7 @@ def run_summary(gt: list[dict]) -> dict:
 
 
 def _print_summary_table(report: dict) -> None:
+    """Imprime tabla final con las metricas micro de cada tarea y tecnica."""
     print()
     print("=" * 70)
     print(f"{'Tarea':<20} {'Tecnica':<18} {'Metrica':<18} {'Valor':<12}")
@@ -218,6 +225,7 @@ def _print_summary_table(report: dict) -> None:
 
 
 def main() -> None:
+    """Entrypoint: corre las 3 tareas x 2 tecnicas y persiste el reporte JSON."""
     gt = json.loads(GT_PATH.read_text(encoding="utf-8"))
     report = {}
 

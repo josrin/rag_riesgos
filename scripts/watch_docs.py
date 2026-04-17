@@ -34,15 +34,18 @@ class _SyncHandler(FileSystemEventHandler):
     """Colecciona eventos y programa una unica sync tras la ráfaga."""
 
     def __init__(self) -> None:
+        """Inicializa el lock, el timer de debounce y el buffer de razon pendiente."""
         self._lock = threading.Lock()
         self._timer: threading.Timer | None = None
         self._pending_reason = ""
 
     def _relevant(self, path: str) -> bool:
+        """True si el archivo tiene extension soportada (PDF, TXT, MD)."""
         p = Path(path)
         return p.suffix.lower() in SUPPORTED_EXTS
 
     def _schedule(self, reason: str) -> None:
+        """Reinicia el timer de debounce; tras DEBOUNCE_S sin eventos dispara sync."""
         with self._lock:
             self._pending_reason = reason
             if self._timer is not None:
@@ -52,6 +55,7 @@ class _SyncHandler(FileSystemEventHandler):
             self._timer.start()
 
     def _run_sync(self) -> None:
+        """Ejecuta `corpus_sync.sync()` y loggea la delta aplicada; captura errores."""
         with self._lock:
             reason = self._pending_reason
             self._pending_reason = ""
@@ -74,6 +78,7 @@ class _SyncHandler(FileSystemEventHandler):
             logger.error("Fallo en sync: %s", e, exc_info=True)
 
     def _on_event(self, event, kind: str) -> None:
+        """Filtra eventos irrelevantes y agenda sync con etiqueta descriptiva."""
         if event.is_directory:
             return
         if not self._relevant(event.src_path):
@@ -81,19 +86,24 @@ class _SyncHandler(FileSystemEventHandler):
         self._schedule(f"{kind}:{Path(event.src_path).name}")
 
     def on_created(self, event) -> None:
+        """Hook de watchdog: archivo creado en `docs/`."""
         self._on_event(event, "create")
 
     def on_modified(self, event) -> None:
+        """Hook de watchdog: archivo modificado en `docs/`."""
         self._on_event(event, "modify")
 
     def on_deleted(self, event) -> None:
+        """Hook de watchdog: archivo eliminado de `docs/`."""
         self._on_event(event, "delete")
 
     def on_moved(self, event) -> None:
+        """Hook de watchdog: archivo renombrado o movido dentro de `docs/`."""
         self._on_event(event, "move")
 
 
 def main() -> None:
+    """Entrypoint: sync inicial, arranca el Observer y corre hasta Ctrl+C."""
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s %(name)s %(levelname)s %(message)s",

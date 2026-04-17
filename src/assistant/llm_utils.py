@@ -59,7 +59,7 @@ def _balanced_extract(text: str, open_ch: str, close_ch: str) -> str | None:
         elif ch == close_ch:
             depth -= 1
             if depth == 0:
-                return text[start : i + 1]
+                return text[start:i + 1]
     return None
 
 
@@ -97,6 +97,9 @@ def parse_json_response(raw: str, default: Any) -> Any:
             try:
                 return json.loads(block)
             except json.JSONDecodeError:
+                # Los LLMs locales a veces generan `[...,]` o `{"a": 1,}`
+                # — JSON estricto los rechaza. Borramos la coma colgante
+                # antes del cierre y reintentamos.
                 cleaned = re.sub(r",(\s*[}\]])", r"\1", block)
                 try:
                     return json.loads(cleaned)

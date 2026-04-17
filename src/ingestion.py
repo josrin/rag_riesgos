@@ -30,6 +30,7 @@ MIN_CHARS = 40  # heuristica: menos que esto en una pagina = probablemente escan
 
 
 def _clean(text: str) -> str:
+    """Colapsa espacios, elimina nulls y condensa saltos de linea multiples."""
     text = text.replace("\x00", " ")
     text = re.sub(r"[ \t]+", " ", text)
     text = re.sub(r"\n{3,}", "\n\n", text)
@@ -106,15 +107,24 @@ def _extract_page_tables_and_text(page) -> tuple[str, list[str]]:
     if not tables_found:
         return page.extract_text() or "", []
 
+    # pdfplumber usa coordenadas (x0, top, x1, bottom) en puntos PDF, con
+    # el origen en la esquina superior izquierda de la pagina. Un bbox de
+    # tabla es (x0, top, x1, bottom).
     bboxes = [t.bbox for t in tables_found]
 
     def _outside_tables(obj):
+        """Predicado para `page.filter()`: True si el objeto esta fuera de toda tabla."""
         top = obj.get("top")
         bottom = obj.get("bottom")
         x0 = obj.get("x0")
         x1 = obj.get("x1")
+        # Objetos sin geometria (p.ej. metadata, anotaciones) no se filtran;
+        # los dejamos pasar para no perder contenido inesperado.
         if top is None or bottom is None or x0 is None or x1 is None:
             return True
+        # Contencion estricta: el objeto esta DENTRO del bbox de la tabla
+        # si sus cuatro esquinas caen dentro. Solo entonces lo excluimos;
+        # cualquier solape parcial se conserva en la prosa.
         for bx0, btop, bx1, bbottom in bboxes:
             if top >= btop and bottom <= bbottom and x0 >= bx0 and x1 <= bx1:
                 return False

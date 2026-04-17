@@ -340,6 +340,17 @@ Streamlit con tres bloques:
    consultas. Aquí sí se conserva la tabla de fuentes con la distancia
    coseno, útil para auditoría retrospectiva.
 
+### Estructura del Asistente (`src/assistant/ui*.py`)
+La pestaña **Asistente** se divide en cuatro módulos para evitar que
+`ui.py` concentre tres responsabilidades distintas: `ui.py` queda
+como dispatcher (<35 líneas) que elige la sub-sección, y
+`ui_classification.py`, `ui_extraction.py`, `ui_summary.py` implementan
+cada tarea de forma independiente. Las constantes compartidas
+(`TECHNIQUE_LABELS`, diccionarios *pretty*) viven en `ui_common.py` —
+se importan desde los tres sub-módulos sin duplicación. Esta partición
+permite tocar, por ejemplo, la clasificación sin recargar el código de
+resumen o extracción.
+
 ### Warmup de modelos
 `pipeline.warmup()` se invoca al arrancar la app via
 `@st.cache_resource`: precarga `llama3`, `bge-m3` (y el reranker si
@@ -379,7 +390,34 @@ Se corre en una terminal separada de Streamlit y queda activo hasta
 
 ---
 
-## 10. Limitaciones conocidas
+## 10. Calidad de código
+
+La base de código se mantiene con tres invariantes auditables en CI o
+pre-commit:
+
+- **PEP 8 via flake8** (`--max-line-length=120`) — 0 issues en `src/`,
+  `scripts/`, `tests/` y `app.py`. Las únicas excepciones intencionales
+  son `# noqa: E402` en scripts de evaluación, donde `sys.stdout` se
+  reasigna a UTF-8 antes de importar dependencias (necesario en Windows
+  para caracteres acentuados en consola).
+- **Docstrings en toda función** — auditado con un walker AST:
+  0 funciones sin docstring en código productivo. Las docstrings son
+  de una línea cuando la firma + nombre ya son descriptivos, y
+  extendidas cuando hay invariantes o decisiones no obvias (RRF,
+  bbox de tablas, parser JSON tolerante).
+- **Tests unitarios** — 234 tests en `~5.6 s`; cualquier cambio en
+  `src/` debe mantener la suite verde. Ver `test_unitarios.md`.
+
+Comentarios **inline** se reservan para explicar el *por qué* de
+lógica no evidente (fórmula RRF en `retriever._hybrid_rank`, geometría
+de bboxes de tabla en `ingestion._extract_page_tables_and_text`,
+recuperación de trailing commas en `llm_utils.parse_json_response`).
+El *qué* lo explican los nombres; los comentarios que solo repiten la
+firma se omiten deliberadamente.
+
+---
+
+## 11. Limitaciones conocidas
 
 - Se comparó `llama3` vs `llama3.1:8b` con el harness de evaluación
   (`scripts/eval_compare.py`): `llama3` gana (100 % acc, p50 1.5 s vs

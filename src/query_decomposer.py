@@ -10,7 +10,6 @@ from __future__ import annotations
 import json
 import logging
 import re
-from typing import Sequence
 
 import ollama
 
@@ -39,6 +38,7 @@ _DECOMPOSE_SYSTEM = (
 
 
 def _looks_like_question(s: str) -> bool:
+    """Heuristica liviana: la cadena debe tener >=6 chars y signo de interrogacion."""
     s = s.strip()
     if not s or len(s) < 6:
         return False
@@ -46,10 +46,12 @@ def _looks_like_question(s: str) -> bool:
 
 
 def is_compound(question: str) -> bool:
+    """True si la pregunta parece compuesta (regex sobre 'y <wh>', 'ademas', multi-'?')."""
     return bool(_COMPOUND_RE.search(question))
 
 
 def decompose(question: str) -> list[str]:
+    """Devuelve subpreguntas; si no es compuesta o el LLM falla, `[question]`."""
     if not is_compound(question):
         return [question]
     try:

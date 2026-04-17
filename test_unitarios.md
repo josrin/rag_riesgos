@@ -1,7 +1,7 @@
 # Pruebas unitarias — RAG Riesgos
 
-Fecha: 2026-04-16 (suite original + modulo asistente)
-Resultado global: **171/171 passing** en 7.4 s.
+Fecha: 2026-04-16 (iteración #6 — cobertura extendida)
+Resultado global: **234/234 passing** en ~5.6 s.
 
 ## Proposito
 
@@ -16,7 +16,7 @@ respuesta.
 ```
 rag-riesgos/
   pytest.ini                  # configuracion: testpaths=tests, -q, filterwarnings
-  requirements-dev.txt        # pytest==8.3.4 (dev-only, no entra en requirements.txt)
+  requirements-dev.txt        # pytest==8.3.4 + flake8 (dev-only, no entra en requirements.txt)
   tests/
     __init__.py
     test_chunking.py
@@ -25,6 +25,13 @@ rag-riesgos/
     test_query_decomposer.py
     test_retriever.py
     test_logger_db.py
+    test_config.py
+    test_embeddings.py
+    test_generator.py
+    test_vectorstore.py
+    test_reranker.py
+    test_pipeline.py
+    test_dashboard.py
     test_assistant_parser.py
     test_assistant_classifier.py
     test_assistant_extractor.py
@@ -114,6 +121,81 @@ al modulo. No toca el `data/queries.db` real.
 | `TestRecent` | 3 | Orden DESC por `ts`, `limit` respetado, DB vacia → [] |
 | `TestPurgeOld` | 3 | Borra >30 dias / conserva recientes, sin candidatos → 0, boundary 30d 1min → borrado |
 
+### `test_config.py` — 6 tests
+
+| Test | Que valida |
+|---|---|
+| `test_settings_is_frozen_dataclass` | `Settings` es frozen; asignar atributos lanza `FrozenInstanceError` |
+| `test_paths_are_absolute` | `docs_dir`, `chroma_dir`, `queries_db` son absolutos independientemente del cwd |
+| `test_numeric_defaults_are_positive` | `chunk_size > 0`, `chunk_overlap < chunk_size`, `top_k > 0`, `pool_size ≥ top_k`, `0 ≤ alpha ≤ 1` |
+| `test_collection_name_stable` | `"riesgos_corpus"` hardcodeado — un rename rompe persistencia |
+| `test_env_override` | `LLM_MODEL`, `TOP_K`, `RERANKER_ENABLED` se leen de env al recargar el modulo |
+| `test_reranker_enabled_parses_falsy_strings` | Cualquier valor distinto de `"true"/"1"/"yes"` (case-insensitive) es `False` |
+
+### `test_embeddings.py` — 11 tests
+
+| Clase | Tests | Que valida |
+|---|---|---|
+| `TestEmbedOne` | 3 | Devuelve lista de floats, segunda llamada con mismo texto no pega Ollama (cache), textos distintos → llamadas distintas |
+| `TestEmbedMany` | 2 | Preserva orden, dedup dentro del batch (cache transparente) |
+| `TestCacheStats` | 2 | `hit_rate=0.0` sobre cache vacio, `hit_rate=0.5` con 1 hit / 1 miss |
+| `TestClearCache` | 1 | Tras `clear_cache()` la siguiente llamada vuelve a pegar Ollama |
+
+`_fetch_embedding` se mockea; no se pega Ollama en los tests.
+
+### `test_generator.py` — 11 tests
+
+| Clase | Tests | Que valida |
+|---|---|---|
+| `TestFormatContext` | 5 | Estructura `[Fragmento N]`, placeholder `(sin titulo)` cuando falta `section_hint`, separador entre bloques, orden preservado |
+| `TestBuildMessages` | 3 | 2 mensajes (system + user), prompt de sistema exige seccion `Fuentes:`, pregunta embebida en user |
+| `TestAnswerFastPaths` | 2 | `answer([])` y `answer_stream([])` devuelven el mensaje de "no encuentro" sin llamar al LLM |
+
+### `test_vectorstore.py` — 9 tests
+
+ChromaDB corre en proceso; los tests usan un `tmp_path` aislado con
+`dataclasses.replace(settings, chroma_dir=..., collection_name=...)`.
+
+| Clase | Tests | Que valida |
+|---|---|---|
+| `TestGetCollection` | 2 | Directorio persistente se crea al primer acceso, `reset=True` vacia la coleccion |
+| `TestUpsert` | 3 | Count tras upsert, upsert idempotente en mismo id (source/page/chunk_index), metadata `is_table` persistida |
+| `TestQuery` | 3 | Vector mas cercano primero, `distance` presente, `top_k` respetado |
+
+### `test_reranker.py` — 10 tests
+
+No se carga el CrossEncoder real (2 GB); se mockea con `numpy`.
+
+| Clase | Tests | Que valida |
+|---|---|---|
+| `TestMinmax` | 3 | `[1,2,3]` → `[0, 0.5, 1]`, todos iguales → `[0.5, ...]`, single element → `[0.5]` |
+| `TestRerankDisabled` | 2 | `hits=[]` → `[]`, preserva orden y trunca a `top_k` |
+| `TestRerankEnabled` | 5 | Pool ≤ `top_k` no invoca al modelo, `alpha=1` usa orden del cross-encoder, `alpha=0` preserva orden RRF, scores `rerank_score`/`blended_score` adjuntados |
+
+### `test_pipeline.py` — 10 tests
+
+Todas las dependencias del pipeline se mockean (retriever, generator,
+decomposer, reranker, logger_db, faithfulness). El foco es la
+orquestación, no la calidad semántica.
+
+| Clase | Tests | Que valida |
+|---|---|---|
+| `TestAsk` | 6 | Shape del payload, `distance` redondeada, single-query no incluye original en fusion, multi-subquery prepende original, log ejecutado, warnings propagados |
+| `TestAskStream` | 3 | Meta vacia hasta consumir el generador, meta poblada tras consumo, stream loguea |
+| `TestWarmup` | 2 | Captura excepciones y devuelve `ok=False`, success path devuelve `ok=True` |
+
+### `test_dashboard.py` — 12 tests
+
+Los tests cubren las funciones puras de agregación. El render de
+Streamlit no se testea (requiere runtime de la app).
+
+| Clase | Tests | Que valida |
+|---|---|---|
+| `TestNormalize` | 3 | Quita acentos, lowercase, detecta el marcador `no encuentro` en varias variantes |
+| `TestSourceFrequencies` | 3 | DataFrame vacio → cols correctas, cuenta citas cross-rows, orden DESC |
+| `TestTopQuestions` | 3 | Vacio → cols correctas, cuenta + mediana, `n` respetado |
+| `TestLoadDataframe` | 2 | Sin rows → vacio, rows → `date`/`no_match`/`warnings_count`/`sources_count` derivadas |
+
 ### `test_assistant_parser.py` — 16 tests
 
 Valida el parser JSON tolerante usado por las 3 tareas del asistente.
@@ -157,36 +239,37 @@ Fixture `isolated_docs` aisla `settings.docs_dir` en `tmp_path`.
 
 ## Politica de uso
 
-1. Correr `python -m pytest` antes de commitear cambios que toquen
-   `src/chunking.py`, `src/ingestion.py`, `src/faithfulness.py`,
-   `src/query_decomposer.py`, `src/retriever.py`, `src/logger_db.py`
-   o cualquier archivo bajo `src/assistant/`.
-2. Si un test falla tras un cambio intencional, actualizar el test
+1. Correr `python -m pytest` antes de commitear cualquier cambio en
+   `src/`. La suite tarda ~5.6 s.
+2. Correr `python -m flake8 src/ scripts/ tests/ app.py
+   --max-line-length=120` como check adicional. Target: 0 issues.
+3. Si un test falla tras un cambio intencional, actualizar el test
    (documentando el cambio), no desactivarlo.
-3. Para cambios en retriever, prompt o modelos correr ademas el
+4. Para cambios en retriever, prompt o modelos correr ademas el
    harness extremo-a-extremo (`python -m scripts.eval`) — los tests
    unitarios no cubren calidad semantica.
 
 ## Cobertura no incluida
 
-- `src/embeddings.py` y `src/vectorstore.py`: adaptadores sobre Ollama
-  y ChromaDB; testear requiere infraestructura real y el eval harness
-  ya los ejercita.
-- `src/pipeline.py`: orquestador; validado por el eval harness.
-- `src/generator.py`: hace llamadas al LLM, no es deterministico.
-- `src/reranker.py`: requiere descarga de `bge-reranker-v2-m3` (~2 GB);
-  su infra ya esta validada via sweep y el flag default es `false`.
-- `src/corpus_sync.py` y watcher: probados manualmente en la pestaña
-  de Streamlit.
-- `extract_pdf()` y OCR: validados end-to-end con PDFs sinteticos
-  (ver PLAN.md §Iteracion #3 y Fase E).
+- `extract_pdf()` y OCR: requieren Tesseract + Poppler + PDFs reales;
+  validados end-to-end (ver PLAN.md §Iteracion #3 y Fase E).
+- `src/reranker._get_model()`: cargar el CrossEncoder real descarga
+  ~2 GB; los tests mockean el modelo y cubren el resto del flujo
+  (min-max, blending, alpha bypass).
+- `src/corpus_sync.py` y watcher (`scripts/watch_docs.py`): probados
+  manualmente desde la UI de Streamlit y validados por el flujo
+  end-to-end.
+- Render de Streamlit (`app.py`, `src/dashboard.render`, los
+  `src/assistant/ui*.py::render`): requieren runtime de Streamlit;
+  las funciones puras subyacentes sí están cubiertas.
 
 ## Resultado final
 
 ```
 $ python -m pytest
-........................................................................ [ 42%]
-........................................................................ [ 84%]
-...........................                                              [100%]
-171 passed in 7.38s
+........................................................................ [ 30%]
+........................................................................ [ 61%]
+........................................................................ [ 92%]
+..................                                                       [100%]
+234 passed in 5.56s
 ```

@@ -45,6 +45,7 @@ def warmup() -> dict[str, Any]:
 
 
 def index_corpus(reset: bool = True) -> dict[str, Any]:
+    """Reindexa todo el corpus (opcionalmente borrando la coleccion antes)."""
     t0 = time.time()
     if reset:
         vectorstore.get_collection(reset=True)
@@ -114,6 +115,7 @@ def ask_stream(question: str) -> tuple[Any, dict]:
     }
 
     def _gen():
+        """Generador que yieldea tokens y va llenando `meta` durante el streaming."""
         t0 = time.time()
         subqueries, hits, context_text, sources = _retrieve(question)
         meta["subqueries"] = subqueries
@@ -142,6 +144,7 @@ def ask_stream(question: str) -> tuple[Any, dict]:
 
 
 def ask(question: str) -> dict[str, Any]:
+    """Consulta no-streaming: retrieve + generate + log. Devuelve respuesta y metadata."""
     logger_db.purge_old()
     t0 = time.time()
     subqueries, hits, context_text, sources = _retrieve(question)

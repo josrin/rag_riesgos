@@ -23,6 +23,7 @@ _model = None
 
 
 def _get_model():
+    """Lazy singleton del CrossEncoder; la primera llamada descarga ~2 GB."""
     global _model
     if _model is None:
         from sentence_transformers import CrossEncoder

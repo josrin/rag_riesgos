@@ -29,7 +29,7 @@ Fusion, lo que mejora la precisión sobre siglas y jerga regulatoria
 - Decisiones de diseño → [`DESIGN.md`](DESIGN.md)
 - Plan de ejecución y roadmap → [`PLAN.md`](PLAN.md)
 - Evaluación con 12 preguntas y fallos detectados → [`EVALUACION.md`](EVALUACION.md)
-- Suite de tests unitarios (171 tests, 7.4 s) → [`test_unitarios.md`](test_unitarios.md)
+- Suite de tests unitarios (234 tests, ~5.6 s) → [`test_unitarios.md`](test_unitarios.md)
 
 ---
 
@@ -290,9 +290,10 @@ permite auditar cada caso individual.
 
 ### 3.7 Tests unitarios
 
-Suite de 171 tests en `tests/` (runtime 7.4 s) que cubre chunking,
-ingestion, faithfulness, retriever BM25, query decomposer, logger y
-los 5 módulos del asistente. Detalle en
+Suite de 234 tests en `tests/` (runtime ~5.6 s) que cubre chunking,
+ingestion, faithfulness, retriever BM25, query decomposer, logger,
+config, embeddings, generator, vectorstore, reranker, pipeline,
+dashboard y los 5 módulos del asistente. Detalle en
 [`test_unitarios.md`](test_unitarios.md).
 
 ```powershell
@@ -336,7 +337,11 @@ rag-riesgos/
 │       ├── extractor.py      # extraccion 4 categorias via map-reduce
 │       ├── summarizer.py     # resumen de actas via map-reduce
 │       ├── corpus_utils.py   # listado de docs + filtro "acta"
-│       └── ui.py             # render de la pestaña Asistente
+│       ├── ui.py             # dispatcher de la pestaña Asistente
+│       ├── ui_common.py      # constantes compartidas (labels pretty)
+│       ├── ui_classification.py  # sub-panel de clasificacion
+│       ├── ui_extraction.py  # sub-panel de extraccion
+│       └── ui_summary.py     # sub-panel de resumen ejecutivo
 ├── scripts/
 │   ├── index_documents.py    # reindexar corpus completo desde consola
 │   ├── sync_docs.py          # sincronizacion incremental (one-shot)
@@ -353,8 +358,10 @@ rag-riesgos/
 │   ├── compare_report.json            # ultima comparacion entre LLMs
 │   ├── alpha_sweep.json               # ultimo sweep del reranker blended
 │   └── assistant_report.json          # ultimo reporte del eval del asistente
-├── tests/                    # 171 tests pytest (chunking, ingestion, retriever,
-│                             # faithfulness, logger, asistente) — ver test_unitarios.md
+├── tests/                    # 234 tests pytest (chunking, ingestion, retriever,
+│                             # faithfulness, logger, config, embeddings, generator,
+│                             # vectorstore, reranker, pipeline, dashboard,
+│                             # asistente) — ver test_unitarios.md
 ├── app.py                    # UI Streamlit (4 pestañas: Consulta, Dashboard, Asistente, Historial)
 ├── requirements.txt          # dependencias Python (con prerequisitos documentados)
 ├── requirements-dev.txt      # dependencias de dev (pytest)

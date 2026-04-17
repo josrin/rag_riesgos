@@ -20,6 +20,7 @@ st.caption(f"Modelo: {settings.llm_model} · Embeddings: {settings.embedding_mod
 
 @st.cache_resource
 def _warmup_once() -> dict:
+    """Warmup de Ollama cacheado por Streamlit; se ejecuta una sola vez por sesion."""
     return warmup()
 
 

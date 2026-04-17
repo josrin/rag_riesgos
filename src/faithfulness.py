@@ -22,6 +22,7 @@ _TRIVIAL_NUMBERS = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "100"}
 
 
 def _norm(s: str) -> str:
+    """Normaliza a lowercase sin acentos y con espacios colapsados para comparar."""
     s = unicodedata.normalize("NFD", s)
     s = "".join(c for c in s if unicodedata.category(c) != "Mn")
     s = re.sub(r"\s+", " ", s.lower())
@@ -29,6 +30,7 @@ def _norm(s: str) -> str:
 
 
 def _claim_in_context(claim: str, context_norm: str) -> bool:
+    """True si el claim aparece en el contexto, tolerando espacios alrededor del %."""
     claim_norm = _norm(claim).strip()
     if claim_norm in context_norm:
         return True
@@ -47,6 +49,7 @@ def check(answer: str, context: str) -> list[dict]:
     seen: set[str] = set()
 
     def check_matches(pattern: re.Pattern, kind: str, filter_trivial: bool = False) -> None:
+        """Encuentra claims del tipo dado en la respuesta y marca los no presentes."""
         for m in pattern.finditer(answer):
             claim = m.group().strip()
             key = f"{kind}:{_norm(claim)}"

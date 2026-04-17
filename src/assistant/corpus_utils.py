@@ -8,7 +8,6 @@ leyendo el archivo completo como un unico 'chunk' con page=1.
 from __future__ import annotations
 
 import logging
-from pathlib import Path
 
 from .. import vectorstore
 from ..config import settings
@@ -65,6 +64,7 @@ def chunks_for_doc(doc_name: str) -> list[dict]:
 
 
 def _fallback_from_disk(doc_name: str) -> list[dict]:
+    """Si un doc no tiene chunks en ChromaDB, lee .txt/.md completo como 'chunk' unico."""
     path = settings.docs_dir / doc_name
     if not path.exists() or path.suffix.lower() not in {".txt", ".md"}:
         return []

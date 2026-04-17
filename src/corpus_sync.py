@@ -29,6 +29,7 @@ MANIFEST_PATH = settings.chroma_dir.parent / "manifest.json"
 
 
 def _file_hash(path: Path) -> str:
+    """SHA-256 del contenido del archivo (streaming en bloques de 1 MiB)."""
     h = hashlib.sha256()
     with path.open("rb") as f:
         for block in iter(lambda: f.read(1 << 20), b""):
@@ -37,6 +38,7 @@ def _file_hash(path: Path) -> str:
 
 
 def _load_manifest() -> dict[str, str]:
+    """Carga `{filename: sha256}` desde disco; dict vacio si no existe."""
     if MANIFEST_PATH.exists():
         try:
             return json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
@@ -46,6 +48,7 @@ def _load_manifest() -> dict[str, str]:
 
 
 def _save_manifest(manifest: dict[str, str]) -> None:
+    """Persiste el manifest en disco como JSON ordenado para diffs estables."""
     MANIFEST_PATH.parent.mkdir(parents=True, exist_ok=True)
     MANIFEST_PATH.write_text(
         json.dumps(manifest, indent=2, sort_keys=True), encoding="utf-8"
@@ -87,11 +90,13 @@ def scan_state() -> dict[str, Any]:
 
 
 def has_changes(state: dict | None = None) -> bool:
+    """True si hay nuevos, modificados o eliminados por procesar."""
     s = state if state is not None else scan_state()
     return bool(s["new"] or s["modified"] or s["deleted"])
 
 
 def _extract_one(path: Path):
+    """Dispatch por extension: PDF -> pdfplumber; .txt/.md -> lector plano."""
     ext = path.suffix.lower()
     if ext == ".pdf":
         return list(extract_pdf(path))

@@ -12,13 +12,14 @@ import time
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
 
-from src.config import settings
-from scripts.eval import evaluate
+from src.config import settings  # noqa: E402
+from scripts.eval import evaluate  # noqa: E402
 
 ALPHAS = [0.0, 0.3, 0.5, 0.7, 1.0]
 
 
 def main() -> None:
+    """Itera valores de alpha y corre el harness para cada uno; guarda el barrido."""
     object.__setattr__(settings, "reranker_enabled", True)
     results = []
     for alpha in ALPHAS:
